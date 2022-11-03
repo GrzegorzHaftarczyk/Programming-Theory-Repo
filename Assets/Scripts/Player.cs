@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {    
@@ -7,6 +8,7 @@ public class Player : MonoBehaviour
     public GameObject prefabBody;
     public GameObject prefabFruit;
     public GameObject environment;
+    public GameObject exitMessage;
     public float boardLeft, boardRight, boardUp, boardDown;
     float speed = 0.4F;
     enum Direction { LEFT, RIGHT, TOP, BOTTOM }
@@ -22,6 +24,7 @@ public class Player : MonoBehaviour
     State gameState = State.MOVE;
     void Start()
     {
+        exitMessage.SetActive(false);
         horizontalLength = (int)((boardRight - boardLeft)/speed);
         vertivalLength = (int)((boardUp - boardDown)/speed);
         addRandomFruit();
@@ -41,6 +44,11 @@ public class Player : MonoBehaviour
             direction = Direction.TOP;
         } else if (verticalInput < -0.1) {
             direction = Direction.BOTTOM;
+        }
+        if(gameState == State.END && Input.GetKeyUp(KeyCode.Space))
+        {
+            SceneManager.LoadScene("TitleScene");
+            exitMessage.SetActive(false);
         }
     }
 
@@ -90,7 +98,12 @@ public class Player : MonoBehaviour
                 transform.GetChild(transform.childCount - 1).gameObject.SetActive(true);
             }
         }
-        // TODO handle end of a game
+        EndGame();
+    }
+
+    private void EndGame()
+    {
+            exitMessage.SetActive(true);
     }
 
     State collideWith(Collider coolider)
